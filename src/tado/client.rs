@@ -118,19 +118,21 @@ impl Client {
         let mut response = Vec::<ZoneStateResponse>::new();
 
         for zone in zones_response {
-            info!("retrieving zone details for {}...", zone.name);
-            let zone_state_response = match self.zone_state(zone.id).await {
-                Ok(resp) => resp,
-                Err(e) => {
-                    error!("unable to retrieve home zone '{}' state: {}", zone.name, e);
-                    return Vec::new();
-                }
-            };
+            if zone.name != "Hot Water" {
+                info!("retrieving zone details for {}...", zone.name);
+                let zone_state_response = match self.zone_state(zone.id).await {
+                    Ok(resp) => resp,
+                    Err(e) => {
+                        error!("unable to retrieve home zone '{}' state: {}", zone.name, e);
+                        return Vec::new();
+                    }
+                };
 
-            response.push(ZoneStateResponse{
-                name: zone.name,
-                state_response: zone_state_response,
-            });
+                response.push(ZoneStateResponse{
+                    name: zone.name,
+                    state_response: zone_state_response,
+                });
+            }
         }
 
         return response;
